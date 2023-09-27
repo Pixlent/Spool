@@ -1,0 +1,13 @@
+{
+  "ip": "0.0.0.0",
+  "port": 25565,
+  "online-mode": true,
+  "chunk-view-distance": 8,
+  "entity-view-distance": 6,
+  "compression-threshold": 256,
+  "difficulty": "NORMAL",
+  "proxy": {
+    "type": "NONE",
+    "velocity-secret": ""
+  }
+}
