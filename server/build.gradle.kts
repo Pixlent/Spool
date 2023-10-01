@@ -1,7 +1,7 @@
 import java.nio.file.Paths
 
 dependencies {
-    implementation("com.github.hollow-cube:minestom-ce:010fe985bb")
+    implementation("dev.hollowcube:minestom-ce:${project.property("minestom_version")}")
     implementation(project(":core"))
     implementation(project(":config"))
     implementation(project(":package_manager"))

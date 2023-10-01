@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PackageManager {
+    private final Logger logger = new Logger("PackageManager");
     private List<Package> packages = new ArrayList<>();
 
     PackageManager() {
@@ -22,9 +23,7 @@ public class PackageManager {
 
         if (!validatePackageDirectory(packageDirectory)) return;
 
-        FileManager.searchDirectory(packageDirectory).forEach(file -> {
-            validatePackage(file.toPath());
-        });
+        FileManager.searchDirectory(packageDirectory).forEach(file -> validatePackage(file.toPath()));
     }
 
     /*
@@ -33,7 +32,7 @@ public class PackageManager {
     private boolean validatePackageDirectory(Path packageDirectory) {
         if (packageDirectory.toFile().exists()) return true;
         if (!packageDirectory.toFile().mkdirs()) {
-            System.out.println("Failed creating package directory");
+            logger.error("Failed creating package directory");
             return false;
         }
         return true;
@@ -45,12 +44,14 @@ public class PackageManager {
         File manifestFile = packageDirectory.resolve("manifest.json").toFile();
 
         if (!manifestFile.exists()) {
-            Logger.error("PackageManager/Package", "Manifest.json doesn't exist: " + manifestFile.getParent());
+            logger.error("Manifest.json doesn't exist: " + manifestFile.getParent());
             return;
         }
 
         Manifest manifest = gson.fromJson(FileManager.readFile(manifestFile), Manifest.class);
 
-        System.out.println(manifest.id());
+        packages.add(new Package(packageDirectory, manifest));
+
+        logger.info("Loaded package: " + manifest.id());
     }
 }

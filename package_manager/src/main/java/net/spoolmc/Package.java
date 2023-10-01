@@ -1,26 +1,43 @@
 package net.spoolmc;
 
-import com.google.gson.Gson;
+import lombok.Getter;
 import net.spoolmc.data.Manifest;
 import net.spoolmc.file.FileManager;
 import net.spoolmc.logger.Logger;
 
-import java.io.File;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Package {
-    private final Manifest manifest;
-    private final Path packageDirectory;
-    Package(Path packageDirectory) {
-        final Gson gson = new Gson();
+            private final Logger       logger  = new Logger("Package");
+    @Getter private final List<Script> scripts = new ArrayList<>();
+    @Getter private final Manifest     manifest;
+    @Getter private final Path         packageDirectory;
 
-        File manifest = packageDirectory.resolve("manifest.json").toFile();
+    Package(Path packageDirectory, Manifest manifest) {
+        this.packageDirectory = packageDirectory;
+        this.manifest = manifest;
+        index(packageDirectory);
+    }
 
-        if (!manifest.exists()) {
-            Logger.error("PackageManager/Package", "Manifest.json doesn't exist: " + manifest.getParent());
+    private void index(Path directory) {
+        Path scriptDirectory = directory.resolve("src/scripts");
+
+        if (!scriptDirectory.toFile().exists()) {
+            logger.info("No scripts: " + manifest.id() + " Path: " + scriptDirectory);
+            return;
         }
 
-        this.packageDirectory = packageDirectory;
-        this.manifest = gson.fromJson(FileManager.readFile(manifest), Manifest.class);
+        indexScripts(scriptDirectory);
+    }
+
+    private void indexScripts(Path scriptDirectory) {
+        FileManager.searchDirectoryDeep(scriptDirectory).forEach(file -> {
+            if (file.getName().endsWith(".js")) {
+                scripts.add(new Script(file));
+                logger.info("Loaded script: " + file.getName());
+            }
+        });
     }
 }

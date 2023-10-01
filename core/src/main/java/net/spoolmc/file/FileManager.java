@@ -1,10 +1,10 @@
 package net.spoolmc.file;
 
+import net.spoolmc.Guard.Guard;
 import net.spoolmc.logger.Logger;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,65 +15,88 @@ import java.util.Objects;
 import java.util.Scanner;
 
 public class FileManager {
-    /*
-     * Get the base path
+    private static final Logger logger = new Logger("FileManager");
+
+    /**
+     * Returns the base path.
+     *
+     * @return The base path as a Path object.
      */
     public static Path getBasePath() {
         return Path.of("");
     }
 
-    /*
-     * Searches a directory for any files (filtered)
+    /**
+     * Searches a directory for files and returns a list of files
+     *
+     * @param directory The directory to search.
+     * @return A list of File objects found in the directory.
      */
-    public static List<File> searchDirectory(final Path dir) {
+    public static List<File> searchDirectory(final Path directory) {
         List<File> files = new ArrayList<>();
 
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+        Guard.tryCatch(() -> {
+            DirectoryStream<Path> stream = Files.newDirectoryStream(directory);
+
             for (Path file : stream) {
                 files.add(file.toFile());
             }
-        }
-
-        catch (IOException e) {
-            Logger.error("Core/FileManager", "Couldn't search directory: "
-                    + dir);
-            e.printStackTrace();
-        }
+        });
 
         return files;
     }
 
-    /*
-     * Makes the file if it doesn't already exist
+    /**
+     * Searches a directory and its subdirectories for files and returns a list of files.
+     *
+     * @param directory The directory to start the deep search from.
+     * @return A list of File objects found in the directory and its subdirectories.
+     */
+    public static List<File> searchDirectoryDeep(final Path directory) {
+        List<File> files = new ArrayList<>();
+
+        Guard.tryCatch(() -> {
+            DirectoryStream<Path> stream = Files.newDirectoryStream(directory);
+
+            for (Path file : stream) {
+                if (Files.isDirectory(file)) {
+                    files.addAll(searchDirectoryDeep(file));
+                } else {
+                    files.add(file.toFile());
+                }
+            }
+        });
+
+        return files;
+    }
+
+    /**
+     * Saves a resource to a file if the file does not already exist.
+     *
+     * @param path     The path to the file where the resource will be saved.
+     * @param resource The name of the resource to save, typically a file in the classpath.
      */
     public static void saveResourceIfNotExists(Path path, String resource) {
         if (Files.exists(path)) return;
         // Try to write the file, because it doesn't exist
-        try {
-            Files.write(path, Objects.requireNonNull(FileManager.class.getClassLoader().getResourceAsStream(resource)).readAllBytes(), StandardOpenOption.CREATE);
-        }
-        // Catch if write failed
-        catch (IOException e) {
-            Logger.error("Core/FileManager", "Couldn't saveResourceIfNotExists: "
-                    + path
-                    + " & "
-                    + resource);
-            e.printStackTrace();
-        }
+
+        Guard.tryCatch(() -> Files.write(path, Objects.requireNonNull(FileManager.class.getClassLoader().getResourceAsStream(resource)).readAllBytes(), StandardOpenOption.CREATE));
     }
 
-    /*
-     * Read a file as a string
+    /**
+     * Reads the contents of a file and returns them as a single string.
+     *
+     * @param file The file to read.
+     * @return The contents of the file as a single string.
+     * @throws RuntimeException If the file does not exist or cannot be read.
      */
     public static String readFile(File file) {
         Scanner reader;
 
         try {
             reader = new Scanner(file);
-        }
-
-        catch (FileNotFoundException e) {
-            Logger.error("Core/FileManager", "Couldn't read file: " + file.getPath());
+        } catch (FileNotFoundException e) {
+            logger.error("Couldn't read file: " + file.getPath());
             throw new RuntimeException(e);
         }
 

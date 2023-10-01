@@ -12,6 +12,7 @@ import net.spoolmc.logger.Logger;
 import java.nio.file.Path;
 
 public class ConfigManager {
+    private static final Logger logger = new Logger("ConfigManager");
     @Getter private static final Config config = load();
     @Getter private static final String serverBrand = "Spool";
 
@@ -48,17 +49,17 @@ public class ConfigManager {
                 BungeeCordProxy.enable();
                 System.out.println("BungeeCord support has been enabled");
             }
-            case NONE -> Logger.info("Proxy", "No proxy has been enabled");
+            case NONE -> logger.info("No proxy has been enabled");
         }
     }
 
     private static void setupVelocity() {
         if (config.proxy().getVelocitySecret().isEmpty()) {
-            Logger.error("Proxy", "Velocity support is enabled but the velocity secret is empty");
+            logger.error("Velocity support is enabled but the velocity secret is empty");
             System.exit(1000); // Might as well terminate the server, it won't act as expected otherwise
         } else {
             VelocityProxy.enable(config.proxy().getVelocitySecret());
-            Logger.setup("Proxy", "Velocity support has been enabled");
+            logger.setup("Velocity support has been enabled");
         }
     }
 }

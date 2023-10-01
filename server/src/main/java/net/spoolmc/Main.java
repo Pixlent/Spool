@@ -8,6 +8,7 @@ import net.minestom.server.event.server.ServerListPingEvent;
 
 public class Main {
     private static PackageManager packageManager;
+    private static ScriptingEngine scriptingEngine;
 
     public static void main(String[] args) {
 
@@ -24,6 +25,7 @@ public class Main {
         });
 
         packageManager = new PackageManager();
+        scriptingEngine = new ScriptingEngine();
 
         minecraftServer.start(ConfigManager.getConfig().ip(), ConfigManager.getConfig().port());
 
@@ -33,7 +35,6 @@ public class Main {
         GlobalEventHandler eventHandler = MinecraftServer.getGlobalEventHandler();
 
         eventHandler.addListener(ServerListPingEvent.class, ServerList::onServerListPing);
-
 
     }
 }

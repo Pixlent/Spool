@@ -4,46 +4,51 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Logger {
-    public static void debug(String location, String message) {
-        printf(location, Level.DEBUG, message);
+    private final String origin;
+    public Logger(String origin) {
+        this.origin = origin;
     }
 
-    public static void setup(String location, String message) {
-        printf(location, Level.SETUP, message);
+    public void debug(String message) {
+        printf(Level.DEBUG, message);
     }
 
-    public static void info(String location, String message) {
-        printf(location, Level.INFO, message);
+    public void setup(String message) {
+        printf(Level.SETUP, message);
     }
 
-    public static void warn(String location, String message) {
-        printf(location, Level.WARN, message);
+    public void info(String message) {
+        printf(Level.INFO, message);
     }
 
-    public static void error(String location, String message) {
-        printf(location, Level.ERROR, message);
+    public void warn(String message) {
+        printf(Level.WARN, message);
     }
 
-    private static void printf(String location, Level level, String message) {
-        System.out.println(preparePrefix(location, level)
+    public void error(String message) {
+        printf(Level.ERROR, message);
+    }
+
+    private void printf(Level level, String message) {
+        System.out.println(preparePrefix(level)
         + prepareLevelColor(level)
         + message
         + Color.RESET);
     }
 
-    private static String preparePrefix(String location, Level level) {
+    private String preparePrefix(Level level) {
         return "["
                 + Color.YELLOW
                 + prepareDate()
                 + " - "
-                + location
+                + origin
                 + "/"
                 + level.name()
                 + Color.WHITE
                 + "] ";
     }
 
-    private static Color prepareLevelColor(Level level) {
+    private Color prepareLevelColor(Level level) {
         return switch (level) {
             case DEBUG -> Color.BLUE;
             case SETUP -> Color.MAGENTA;
@@ -53,7 +58,7 @@ public class Logger {
         };
     }
 
-    private static String prepareDate() {
+    private String prepareDate() {
         // LocalDateTime object with the date and time
         LocalDateTime dateTime = LocalDateTime.now();
 
