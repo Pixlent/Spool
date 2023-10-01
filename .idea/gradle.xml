@@ -11,6 +11,8 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/config" />
             <option value="$PROJECT_DIR$/core" />
+            <option value="$PROJECT_DIR$/package_manager" />
+            <option value="$PROJECT_DIR$/scripting_engine" />
             <option value="$PROJECT_DIR$/server" />
           </set>
         </option>

@@ -4,6 +4,9 @@ dependencies {
     implementation("com.github.hollow-cube:minestom-ce:010fe985bb")
     implementation(project(":core"))
     implementation(project(":config"))
+    implementation(project(":package_manager"))
+    implementation(project(":scripting_engine"))
+
 }
 
 tasks {

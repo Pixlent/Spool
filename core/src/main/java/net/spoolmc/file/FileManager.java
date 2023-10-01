@@ -1,5 +1,7 @@
 package net.spoolmc.file;
 
+import net.spoolmc.logger.Logger;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -20,7 +22,6 @@ public class FileManager {
         return Path.of("");
     }
 
-
     /*
      * Searches a directory for any files (filtered)
      */
@@ -34,7 +35,8 @@ public class FileManager {
         }
 
         catch (IOException e) {
-            System.out.println("Couldn't search directory: " + dir.toString());
+            Logger.error("Core/FileManager", "Couldn't search directory: "
+                    + dir);
             e.printStackTrace();
         }
 
@@ -52,11 +54,17 @@ public class FileManager {
         }
         // Catch if write failed
         catch (IOException e) {
-            System.out.println("Couldn't saveResourceIfNotExists: " + path + " & " + resource);
+            Logger.error("Core/FileManager", "Couldn't saveResourceIfNotExists: "
+                    + path
+                    + " & "
+                    + resource);
             e.printStackTrace();
         }
     }
 
+    /*
+     * Read a file as a string
+     */
     public static String readFile(File file) {
         Scanner reader;
 
@@ -65,7 +73,7 @@ public class FileManager {
         }
 
         catch (FileNotFoundException e) {
-            System.out.println("Couldn't read file: " + file.getPath());
+            Logger.error("Core/FileManager", "Couldn't read file: " + file.getPath());
             throw new RuntimeException(e);
         }
 
