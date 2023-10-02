@@ -58,7 +58,7 @@ public class Guard {
     }
 
     @FunctionalInterface
-    private interface ExceptionalRunnable {
+    public interface ExceptionalRunnable {
         void run() throws Exception;
     }
 }
