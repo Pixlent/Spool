@@ -10,7 +10,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * A utility class for preprocessing JSON content by replacing variables in the text.
+ * Javascript object notation extended is a utility class for preprocessing JSON content by replacing variables in the text.
  */
 public class Jsone {
     private final Map<String, String> variables = new HashMap<>();
@@ -76,18 +76,25 @@ public class Jsone {
     }
 
     private String processString(String input) {
-        Pattern pattern = Pattern.compile("\\\\?@([^:]+):([^@]+)"); // Match @namespace:variable_name
+        // Create a pattern to match variables with the specified format
+        String patternString = Pattern.quote(variablePrefix) + "([^:]+):([^\\s@\"]+)";
+        Pattern pattern = Pattern.compile(patternString);
         Matcher matcher = pattern.matcher(input);
 
-        StringBuilder result = new StringBuilder();
+        StringBuilder result = new StringBuilder(input);
+
+        // Find and replace variables using the HashMap
         while (matcher.find()) {
-            String variableKey = matcher.group(0);
-            String variableValue = variables.get(variableKey);
-            if (variableValue != null) {
-                matcher.appendReplacement(result, Matcher.quoteReplacement(variableValue));
+            String variableKey = matcher.group(); // Full variable, e.g., "$namespace:key"
+            String replacement = variables.get(variableKey);
+
+            if (replacement != null) {
+                // Replace the matched variable with its corresponding value
+                result.replace(matcher.start(), matcher.end(), replacement);
+                matcher.reset(result.toString()); // Reset matcher to work with the modified string
             }
         }
-        matcher.appendTail(result);
+
         return result.toString();
     }
 }

@@ -7,6 +7,7 @@ import net.spoolmc.options.Proxy;
 public record Config (
         String ip,
         int port,
+        String motd,
         @SerializedName("online-mode") boolean onlineMode,
         @SerializedName("chunk-view-distance") int chunkViewDistance,
         @SerializedName("entity-view-distance") int entityViewDistance,

@@ -1,6 +1,5 @@
 package net.spoolmc;
 
-import net.minestom.server.entity.Player;
 import net.spoolmc.logger.Logger;
 import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.HostAccess;
@@ -13,25 +12,33 @@ public class ScriptingEngine {
     ScriptingEngine() {
         logger.info("Compiling Script...");
 
-
-
         try (Context context = Context.newBuilder("js").allowHostAccess(HostAccess.ALL).build()) {
             try {
 
-                context.getBindings("js").putMember("Player", Player.class);
+                context.getBindings("js").putMember("server", new Server());
 
                 logger.info("Finished Setting up engine");
 
                 Value jsFunction = context.eval("js", """
                         () => {
-                            return 51+5;
+                            let text;
+                            
+                            text = "This text is printed from javascript";
+                            
+                            server.print(text);
+
+                            server.print("Version: " + server.getVersion());
+                            
+                            const num = 563262+6;
+                            
+                            return num^3;
                         }""");
 
                 logger.info("Parsed script...");
 
                 long startTime = System.nanoTime();
 
-                System.out.println(jsFunction.execute());
+                logger.info("Return value: " + jsFunction.execute());
 
                 long endTime = System.nanoTime();
                 long executionTime = (endTime - startTime) / 1_000_000;
@@ -41,8 +48,6 @@ public class ScriptingEngine {
             } catch (PolyglotException e) {
                 System.err.println("Error occurred: " + e.getMessage());
             }
-
-
         }
     }
 }

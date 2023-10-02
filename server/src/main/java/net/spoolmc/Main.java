@@ -5,10 +5,12 @@ import net.minestom.server.entity.Player;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.PlayerLoginEvent;
 import net.minestom.server.event.server.ServerListPingEvent;
+import net.spoolmc.logger.Logger;
 
 public class Main {
     private static PackageManager packageManager;
     private static ScriptingEngine scriptingEngine;
+    private static final Logger logger = new Logger("Main");
 
     public static void main(String[] args) {
 
@@ -29,6 +31,9 @@ public class Main {
 
         minecraftServer.start(ConfigManager.getConfig().ip(), ConfigManager.getConfig().port());
 
+        logger.info("motd: " + ConfigManager.getConfig().motd());
+
+        registerEvents();
     }
 
     private static void registerEvents() {

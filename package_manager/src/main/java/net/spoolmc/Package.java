@@ -4,6 +4,7 @@ import lombok.Getter;
 import net.spoolmc.data.Manifest;
 import net.spoolmc.file.FileManager;
 import net.spoolmc.logger.Logger;
+import org.graalvm.polyglot.Context;
 
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -35,7 +36,8 @@ public class Package {
     private void indexScripts(Path scriptDirectory) {
         FileManager.searchDirectoryDeep(scriptDirectory).forEach(file -> {
             if (file.getName().endsWith(".js")) {
-                scripts.add(new Script(file));
+                // add the script function thingie
+                // scripts.add(new Script(file, Context.create()));
                 logger.info("Loaded script: " + file.getName());
             }
         });

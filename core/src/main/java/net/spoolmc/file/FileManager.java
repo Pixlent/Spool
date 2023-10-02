@@ -35,7 +35,7 @@ public class FileManager {
     public static List<File> searchDirectory(final Path directory) {
         List<File> files = new ArrayList<>();
 
-        Guard.tryCatch(() -> {
+        Guard.tryCatch("Failed to search directory", () -> {
             DirectoryStream<Path> stream = Files.newDirectoryStream(directory);
 
             for (Path file : stream) {
@@ -55,7 +55,7 @@ public class FileManager {
     public static List<File> searchDirectoryDeep(final Path directory) {
         List<File> files = new ArrayList<>();
 
-        Guard.tryCatch(() -> {
+        Guard.tryCatch("Failed to search directory", () -> {
             DirectoryStream<Path> stream = Files.newDirectoryStream(directory);
 
             for (Path file : stream) {
@@ -80,7 +80,7 @@ public class FileManager {
         if (Files.exists(path)) return;
         // Try to write the file, because it doesn't exist
 
-        Guard.tryCatch(() -> Files.write(path, Objects.requireNonNull(FileManager.class.getClassLoader().getResourceAsStream(resource)).readAllBytes(), StandardOpenOption.CREATE));
+        Guard.tryCatch("Failed to write file: " + path, () -> Files.write(path, Objects.requireNonNull(FileManager.class.getClassLoader().getResourceAsStream(resource)).readAllBytes(), StandardOpenOption.CREATE));
     }
 
     /**
