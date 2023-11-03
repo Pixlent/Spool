@@ -1,10 +1,7 @@
 package net.spoolmc;
 
 import lombok.Getter;
-import net.spoolmc.Guard.Guard;
-import net.spoolmc.file.FileManager;
 import net.spoolmc.logger.Logger;
-import org.graalvm.polyglot.Context;
 import org.graalvm.polyglot.Value;
 
 import java.io.File;
@@ -14,18 +11,16 @@ public class Script {
     private final Value function;
     private final Logger logger = new Logger("Script");
 
-    Script(File file, Context engine) {
+    Script(File file, Compiler compiler) {
         this.file = file;
-        String functionContent = "() => {\n" + FileManager.readFile(file) + "\n}";
-
-        function = Guard.tryCatchReturn(() -> engine.eval("js", functionContent));
+        function = compiler.compile(file);
     }
 
-    public Value execute(Object... arguments) {
+    public Value execute(Object context) {
         if (function == null) {
             logger.error("Function " + file.getPath() + " is null");
             return null;
         }
-        return function.execute(arguments);
+        return function.execute(context);
     }
 }

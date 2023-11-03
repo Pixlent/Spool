@@ -1,4 +1,4 @@
-package net.spoolmc.file;
+package net.spoolmc;
 
 import com.google.gson.Gson;
 import net.spoolmc.logger.Logger;
@@ -21,7 +21,7 @@ public class Jsone {
     /**
      * Constructs a JsonPreProcessor with the ability to add or get variables
      *
-     * @param variablePrefix The prefix used before a variable (for example "$")
+     * @param variablePrefix The prefix used before a variable (for example, "$")
      */
     public Jsone(String variablePrefix) {
         this.variablePrefix = variablePrefix;

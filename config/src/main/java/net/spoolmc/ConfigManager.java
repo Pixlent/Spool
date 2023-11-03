@@ -1,15 +1,12 @@
 package net.spoolmc;
 
+import com.google.gson.Gson;
 import lombok.Getter;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.extras.MojangAuth;
 import net.minestom.server.extras.bungee.BungeeCordProxy;
 import net.minestom.server.extras.velocity.VelocityProxy;
-import net.spoolmc.file.FileManager;
-import net.spoolmc.file.Jsone;
 import net.spoolmc.logger.Logger;
-
-import java.nio.file.Path;
 
 public class ConfigManager {
     private static final Logger logger = new Logger("ConfigManager");
@@ -17,15 +14,13 @@ public class ConfigManager {
     @Getter private static final String serverBrand = "Spool";
 
     public static Config load() {
-        final Path configPath = FileManager.getBasePath().resolve("config.json");
-        final Jsone jsone = new Jsone("@");
-
-        jsone.addVariable("example_package", "motd", "This is an example motd (from variable)");
+        final var configPath = FileManager.getBasePath().resolve("config.json");
+        final var gson = new Gson();
 
         FileManager.saveResourceIfNotExists(configPath, "config.json");
-        String configContent = FileManager.readFile(configPath.toFile());
+        final var configContent = FileManager.readFile(configPath.toFile());
 
-        return jsone.fromJson(configContent, Config.class);
+        return gson.fromJson(configContent, Config.class);
     }
 
     public static void applyServerConfig() {

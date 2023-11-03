@@ -1,10 +1,12 @@
-package net.spoolmc.file;
+package net.spoolmc;
 
-import net.spoolmc.Guard.Guard;
-import net.spoolmc.logger.Logger;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -12,17 +14,16 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Scanner;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class FileManager {
-    private static final Logger logger = new Logger("FileManager");
-
     /**
      * Returns the base path.
      *
      * @return The base path as a Path object.
      */
-    public static Path getBasePath() {
+    @Contract(pure = true)
+    public static @NotNull Path getBasePath() {
         return Path.of("");
     }
 
@@ -41,6 +42,8 @@ public class FileManager {
             for (Path file : stream) {
                 files.add(file.toFile());
             }
+
+            stream.close();
         });
 
         return files;
@@ -65,6 +68,8 @@ public class FileManager {
                     files.add(file.toFile());
                 }
             }
+
+            stream.close();
         });
 
         return files;
@@ -80,7 +85,8 @@ public class FileManager {
         if (Files.exists(path)) return;
         // Try to write the file, because it doesn't exist
 
-        Guard.tryCatch("Failed to write file: " + path, () -> Files.write(path, Objects.requireNonNull(FileManager.class.getClassLoader().getResourceAsStream(resource)).readAllBytes(), StandardOpenOption.CREATE));
+        Guard.tryCatch("Failed to write file: " + path, () ->
+                Files.write(path, Objects.requireNonNull(FileManager.class.getClassLoader().getResourceAsStream(resource)).readAllBytes(), StandardOpenOption.CREATE));
     }
 
     /**
@@ -91,21 +97,17 @@ public class FileManager {
      * @throws RuntimeException If the file does not exist or cannot be read.
      */
     public static String readFile(File file) {
-        Scanner reader;
+        final var content = new AtomicReference<byte[]>();
 
-        try {
-            reader = new Scanner(file);
-        } catch (FileNotFoundException e) {
-            logger.error("Couldn't read file: " + file.getPath());
-            throw new RuntimeException(e);
-        }
+        Guard.tryCatch("", () -> content.set(Files.readAllBytes(file.toPath())));
+        return new String(content.get(), StandardCharsets.UTF_8);
+    }
 
-        String contents = "";
-        while (reader.hasNextLine()) {
-            String data = reader.nextLine();
-            contents = contents.concat(data);
-        }
-
-        return contents;
+    public static void writeFile(File file, String text) {
+        Guard.tryCatch("Couldn't write to file " + file.getPath(), () -> {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(file));
+            writer.write(text);
+            writer.close();
+        });
     }
 }

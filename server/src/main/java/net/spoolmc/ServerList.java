@@ -6,8 +6,6 @@ import net.minestom.server.MinecraftServer;
 import net.minestom.server.event.server.ServerListPingEvent;
 import net.minestom.server.ping.ResponseData;
 import net.minestom.server.utils.identity.NamedAndIdentified;
-import net.spoolmc.file.Base64Encoder;
-import net.spoolmc.file.FileManager;
 
 import java.nio.file.Path;
 
@@ -22,7 +20,7 @@ public class ServerList {
         data.setVersion("1.20.1");
         data.setProtocol(763);
         data.setDescription(Component.text("This is the server MOTD\nSecond Line"));
-        data.addEntry(NamedAndIdentified.named(Component.text("SpoolMC Server").color(TextColor.color(202, 177, 222))));
+        data.addEntry(NamedAndIdentified.named(Component.text("SpoolMC Spool").color(TextColor.color(202, 177, 222))));
 
         Base64Encoder encoder = new Base64Encoder();
         Path imagePath = FileManager.getBasePath().resolve("icon.png");

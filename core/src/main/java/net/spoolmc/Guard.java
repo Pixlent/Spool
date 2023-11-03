@@ -1,7 +1,9 @@
-package net.spoolmc.Guard;
+package net.spoolmc;
 
 import net.spoolmc.logger.Logger;
 
+import java.time.Instant;
+import java.util.Date;
 import java.util.function.Supplier;
 
 /**
@@ -13,28 +15,14 @@ public class Guard {
     /**
      * A utility method to cleanly do try catch without the ugliness that comes with it
      *
-     * @param runnable The code you want to try and catch
-     */
-    public static void tryCatch(ExceptionalRunnable runnable) {
-        try {
-            runnable.run();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * A utility method to cleanly do try catch without the ugliness that comes with it
-     *
-     * @param error The error message that will display in console if an error would happen to occur
+     * @param error The error message that will display in console if an error happens to occur
      * @param runnable The code you want to try and catch
      */
     public static void tryCatch(String error, ExceptionalRunnable runnable) {
         try {
             runnable.run();
         } catch (Exception e) {
-            logger.error(error);
-            e.printStackTrace();
+            handleException(e, error);
         }
     }
 
@@ -52,9 +40,27 @@ public class Guard {
         try {
             return supplier.get();
         } catch (Exception e) {
-            e.printStackTrace();
+            handleException(e);
             return null;
         }
+    }
+
+    private static void handleException(Exception e, String error) {
+        logger.error(error + "\n" + e.getMessage());
+        saveLogFile(e);
+    }
+
+    private static void handleException(Exception e) {
+        logger.error(e.getMessage());
+        saveLogFile(e);
+    }
+
+    private static void saveLogFile(Exception e) {
+        final var log = FileManager.getBasePath().resolve("logs/" + Date.from(Instant.now()) + ".txt").toFile();
+
+        if (log.mkdirs()) logger.error("Couldn't create directories for " + log.getPath());
+
+        FileManager.writeFile(log, e.getMessage());
     }
 
     @FunctionalInterface

@@ -1,4 +1,4 @@
-package net.spoolmc.file;
+package net.spoolmc;
 
 import net.spoolmc.logger.Logger;
 

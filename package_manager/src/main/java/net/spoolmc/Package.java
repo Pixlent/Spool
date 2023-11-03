@@ -2,23 +2,23 @@ package net.spoolmc;
 
 import lombok.Getter;
 import net.spoolmc.data.Manifest;
-import net.spoolmc.file.FileManager;
 import net.spoolmc.logger.Logger;
-import org.graalvm.polyglot.Context;
 
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Package {
             private final Logger       logger  = new Logger("Package");
-    @Getter private final List<Script> scripts = new ArrayList<>();
+            private final Compiler compiler;
+    @Getter private final Map<String, Script> scripts = new HashMap<>();
     @Getter private final Manifest     manifest;
     @Getter private final Path         packageDirectory;
 
-    Package(Path packageDirectory, Manifest manifest) {
+    Package(Path packageDirectory, Manifest manifest, Compiler compiler) {
         this.packageDirectory = packageDirectory;
         this.manifest = manifest;
+        this.compiler = compiler;
         index(packageDirectory);
     }
 
@@ -36,8 +36,7 @@ public class Package {
     private void indexScripts(Path scriptDirectory) {
         FileManager.searchDirectoryDeep(scriptDirectory).forEach(file -> {
             if (file.getName().endsWith(".js")) {
-                // add the script function thingie
-                // scripts.add(new Script(file, Context.create()));
+                scripts.put(file.getName().replace(".js", ""), new Script(file, compiler));
                 logger.info("Loaded script: " + file.getName());
             }
         });

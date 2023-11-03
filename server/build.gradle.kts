@@ -11,10 +11,10 @@ dependencies {
 
 tasks {
     withType(com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar::class.java) {
-        destinationDirectory.set(Paths.get("C:\\Users\\2behe\\Documents\\Development\\Servers\\Spool").toFile())
-        archiveBaseName.set("Spool")
-        archiveClassifier.set("")
-        archiveVersion.set("0.1")
+        destinationDirectory.set(Paths.get("${project.property("archive_output_directory")}").toFile())
+        archiveBaseName.set("${project.property("archive_base_name")}")
+        archiveClassifier.set("${project.property("archive_classifier")}")
+        archiveVersion.set("${project.property("archive_version")}")
         manifest {
             attributes(
                 "Main-Class" to "net.spoolmc.Main",
