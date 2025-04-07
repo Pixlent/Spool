@@ -1,10 +1,10 @@
-package me.pixlent.demo.javet;
+package me.pixlent;
 
 import com.caoccao.javet.interfaces.IJavetLogger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class CustomJavetLogger implements IJavetLogger {
+public class JavetSpoolLogger implements IJavetLogger {
     private static final Logger logger = LoggerFactory.getLogger("JAVET");
 
     @Override
